@@ -1,0 +1,27 @@
+{
+  "entities": {
+    "UserConfig": {
+      "title": "User Configuration",
+      "description": "Configuration for a user's digital avatar including videos, knowledge base, and contact info.",
+      "type": "object",
+      "properties": {
+        "welcomeVideo": { "type": "string", "description": "URL for the welcome entry video (MP4)" },
+        "talkingVideo": { "type": "string", "description": "URL for the talking animation video (MP4)" },
+        "idleVideo": { "type": "string", "description": "URL for the idle animation video (MP4)" },
+        "knowledgeBase": { "type": "string", "description": "System prompt/instructions for the Gemini AI model" },
+        "avatarName": { "type": "string", "description": "The displayed name of the digital分身" },
+        "avatarTitle": { "type": "string", "description": "The displayed job title of the digital分身" },
+        "avatarPhone": { "type": "string", "description": "The contact phone number of the digital分身" },
+        "avatarEmail": { "type": "string", "description": "The contact email address of the digital分身" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "The last time this configuration was updated" }
+      },
+      "required": ["welcomeVideo", "talkingVideo", "idleVideo", "knowledgeBase", "avatarName", "avatarTitle", "avatarPhone", "avatarEmail", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "configs/{userId}": {
+      "schema": "UserConfig",
+      "description": "Stores individual user configurations for their digital avatar showroom."
+    }
+  }
+}

@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Path Variable Hardening
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 2. Validation Blueprints
+    function isValidConfig(data) {
+      return data.keys().hasAll(['welcomeVideo', 'talkingVideo', 'idleVideo', 'knowledgeBase', 'avatarName', 'avatarTitle', 'avatarPhone', 'avatarEmail', 'updatedAt'])
+        && data.welcomeVideo is string && data.welcomeVideo.size() > 0 && data.welcomeVideo.size() < 1000
+        && data.talkingVideo is string && data.talkingVideo.size() > 0 && data.talkingVideo.size() < 1000
+        && data.idleVideo is string && data.idleVideo.size() > 0 && data.idleVideo.size() < 1000
+        && data.knowledgeBase is string && data.knowledgeBase.size() > 0 && data.knowledgeBase.size() < 10000
+        && data.avatarName is string && data.avatarName.size() > 0 && data.avatarName.size() < 100
+        && data.avatarTitle is string && data.avatarTitle.size() > 0 && data.avatarTitle.size() < 100
+        && data.avatarPhone is string && data.avatarPhone.size() > 0 && data.avatarPhone.size() < 50
+        && data.avatarEmail is string && data.avatarEmail.size() > 0 && data.avatarEmail.size() < 100
+        && data.updatedAt is timestamp;
+    }
+
+    match /configs/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      
+      allow create: if isOwner(userId) && isValidId(userId)
+        && isValidConfig(incoming()) 
+        && incoming().keys().size() == 9
+        && incoming().updatedAt == request.time;
+        
+      allow update: if isOwner(userId) && isValidId(userId)
+        && isValidConfig(incoming())
+        && (
+           // Allow full update if all fields are correct and updatedAt is current
+           incoming().updatedAt == request.time
+        );
+        
+      allow delete: if isOwner(userId) && isValidId(userId);
+    }
+  }
+}

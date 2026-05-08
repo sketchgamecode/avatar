@@ -1,0 +1,8 @@
+{
+  "name": "Avatar2.0",
+  "description": "企业数字分身展示与3D展厅互动APP，集成AI助手与Three.js全景数字展厅。",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": []
+}
