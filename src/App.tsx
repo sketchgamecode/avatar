@@ -561,7 +561,7 @@ function ChatInterface({
     }
   }, [mode, setIsBackgroundMuted]);
 
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+  const ai = new GoogleGenAI({ apiKey: (import.meta as any).env.VITE_GEMINI_API_KEY || "" });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -818,7 +818,7 @@ function LiveVoiceCall({
   const isPlayingRef = useRef(false);
   const nextStartTimeRef = useRef(0);
   
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+  const ai = new GoogleGenAI({ apiKey: (import.meta as any).env.VITE_GEMINI_API_KEY || "" });
 
   const playQueuedAudio = () => {
     const ctx = audioContextRef.current;
